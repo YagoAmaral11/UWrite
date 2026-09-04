@@ -24,6 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\UWriter\UWriter.csproj" />
+    <ProjectReference Include="..\UWriter\UWrite.csproj" />
   </ItemGroup>
 </Project>
