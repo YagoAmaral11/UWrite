@@ -1,11 +1,11 @@
 <Solution>
-  <Project Path="UWriter.Android/UWrite.Android.csproj">
+  <Project Path="UWrite.Android/UWrite.Android.csproj">
     <Deploy />
   </Project>
-  <Project Path="UWriter.Browser/UWrite.Browser.csproj" />
-  <Project Path="UWriter.Desktop/UWrite.Desktop.csproj" />
-  <Project Path="UWriter.iOS/UWrite.iOS.csproj">
+  <Project Path="UWrite.Browser/UWrite.Browser.csproj" />
+  <Project Path="UWrite.Desktop/UWrite.Desktop.csproj" />
+  <Project Path="UWrite.iOS/UWrite.iOS.csproj">
     <Deploy />
   </Project>
-  <Project Path="UWriter/UWrite.csproj" />
+  <Project Path="UWrite/UWrite.csproj" />
 </Solution>

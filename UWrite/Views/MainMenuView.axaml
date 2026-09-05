@@ -1,0 +1,131 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:UWrite.Views.Controls"
+             x:Class="UWrite.Views.MainMenuView"
+             Background="{StaticResource BackgroundBrush}">
+
+	<UserControl.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceInclude Source="avares://UWrite/Resources/Colors.axaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</UserControl.Resources>
+
+	<Grid RowDefinitions="Auto,*" Margin="40">
+
+		<!-- Título Principal -->
+		<TextBlock Grid.Row="0"
+                   Text="UWrite"
+                   FontSize="40"
+                   FontWeight="Bold"
+                   Foreground="{StaticResource ForegroundBrush}"
+                   Margin="0,0,0,40"
+                   VerticalAlignment="Top"
+                   HorizontalAlignment="Left" />
+
+		<!-- Conteúdo Principal - Duas Seções -->
+		<Grid Grid.Row="1"
+              ColumnDefinitions="*,1,*">
+
+			<!-- Seção Esquerda - Menu de Ações -->
+			<StackPanel Grid.Column="0"
+                        Orientation="Vertical"
+                        Spacing="16"
+                        VerticalAlignment="Top">
+
+				<TextBlock Text="Actions"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Foreground="{StaticResource ForegroundBrush}"
+                           Margin="0,0,0,16" />
+
+				<!-- Botão New Project -->
+				<Button Background="Transparent"
+                        BorderThickness="0"
+                        Padding="16,12"
+                        HorizontalContentAlignment="Left"
+                        Classes="menuButton">
+					<StackPanel Orientation="Horizontal" Spacing="12">
+						<TextBlock Text="📄" FontSize="24" VerticalAlignment="Center" />
+						<TextBlock Text="New Project"
+                                   FontSize="14"
+                                   Foreground="{StaticResource ForegroundBrush}"
+                                   VerticalAlignment="Center" />
+					</StackPanel>
+					<Button.Styles>
+						<Style Selector="Button:pointerover">
+							<Setter Property="Background" Value="{StaticResource BackgroundSecondaryBrush}" />
+						</Style>
+					</Button.Styles>
+				</Button>
+
+				<!-- Botão Load Project -->
+				<Button Background="Transparent"
+                        BorderThickness="0"
+                        Padding="16,12"
+                        HorizontalContentAlignment="Left">
+					<StackPanel Orientation="Horizontal" Spacing="12">
+						<TextBlock Text="📂" FontSize="24" VerticalAlignment="Center" />
+						<TextBlock Text="Load Project"
+                                   FontSize="14"
+                                   Foreground="{StaticResource ForegroundBrush}"
+                                   VerticalAlignment="Center" />
+					</StackPanel>
+					<Button.Styles>
+						<Style Selector="Button:pointerover">
+							<Setter Property="Background" Value="{StaticResource BackgroundSecondaryBrush}" />
+						</Style>
+					</Button.Styles>
+				</Button>
+
+				<!-- Botão Quit -->
+				<Button Background="Transparent"
+                        BorderThickness="0"
+                        Padding="16,12"
+                        HorizontalContentAlignment="Left"
+                        Margin="0,32,0,0">
+					<StackPanel Orientation="Horizontal" Spacing="12">
+						<TextBlock Text="🚪" FontSize="24" VerticalAlignment="Center" />
+						<TextBlock Text="Quit"
+                                   FontSize="14"
+                                   Foreground="{StaticResource SubTextBrush}"
+                                   VerticalAlignment="Center" />
+					</StackPanel>
+					<Button.Styles>
+						<Style Selector="Button:pointerover">
+							<Setter Property="Background" Value="{StaticResource BackgroundSecondaryBrush}" />
+						</Style>
+					</Button.Styles>
+				</Button>
+			</StackPanel>
+
+			<!-- Separador Vertical -->
+			<Rectangle Grid.Column="1"
+                       Fill="{StaticResource SeparatorBrush}"
+                       Width="1"
+                       Margin="0" />
+
+			<!-- Seção Direita - Projetos Recentes -->
+			<StackPanel Grid.Column="2"
+						Orientation="Vertical"
+						Spacing="12"
+						VerticalAlignment="Top"
+						Margin="40,0,0,0">
+
+				<TextBlock Text="Recent Projects"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Foreground="{StaticResource ForegroundBrush}"
+                           Margin="0,0,0,16" />
+
+				<!-- Lista de Projetos Recentes -->
+				<ScrollViewer MaxHeight="400">
+					<StackPanel x:Name="RecentProjectsPanel"
+                                Orientation="Vertical"
+                                Spacing="12" />
+				</ScrollViewer>
+			</StackPanel>
+		</Grid>
+	</Grid>
+</UserControl>
