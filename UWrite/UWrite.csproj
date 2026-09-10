@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="MainMenuWindow.axaml.cs">
+    <Compile Update="Views\MainMenuWindow.axaml.cs">
       <DependentUpon>MainMenuWindow.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
