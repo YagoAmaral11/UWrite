@@ -14,15 +14,15 @@ namespace UWrite.Code;
 /// </summary>
 /// <param name="projectFilePath">Caminho do arquivo .uwp do projeto</param>
 public class ProjectManager(string projectFilePath) : IDisposable
-{
-    private readonly string rootFilePath = Path.Combine(ProjectsFolderPath, projectFilePath);
+{    
     private ZipArchive rootFileZip;    
-    private bool rootFileLoaded = false; // Se o arquivo zip raiz foi carregado (zipfile e sua metadata.uwf)    
+    private bool isRootFileLoaded = false; // Se o arquivo zip raiz foi carregado (zipfile e sua metadata.uwf)    
 
     // Constantes de caminhos
     private const string MetadataPath = "metadata.uwf";
     private const string DocumentsFolderPath = "docs";
-    public static string ProjectsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "UWrite", "Projects");
+    public static string ProjectsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "UWrite", "Projects"); // Caminho completo da pasta de projetos
+    private readonly string rootFilePath = Path.Combine(ProjectsFolderPath, projectFilePath); // Caminho completo do arquivo .uwp desse projeto
 
     // Dados do projeto carregado
     private ProjectMetadata projectMetadata;
@@ -41,7 +41,7 @@ public class ProjectManager(string projectFilePath) : IDisposable
     /// </summary>
     public void LoadProject()
     {
-        if (rootFileLoaded)
+        if (isRootFileLoaded)
             return;
 
         try
@@ -51,7 +51,7 @@ public class ProjectManager(string projectFilePath) : IDisposable
 
             // Carregar ProjectMetadata
             projectMetadata = LoadProjectMetadataInternal();
-            rootFileLoaded = true;
+            isRootFileLoaded = true;
         }
         catch (Exception ex)
         {
@@ -64,7 +64,7 @@ public class ProjectManager(string projectFilePath) : IDisposable
     /// </summary>
     public ProjectMetadata GetProjectMetadata()
     {
-        if (!rootFileLoaded)
+        if (!isRootFileLoaded)
             throw new InvalidOperationException("Projeto não foi carregado. Chame LoadProject() primeiro.");
 
         return projectMetadata;
@@ -75,7 +75,7 @@ public class ProjectManager(string projectFilePath) : IDisposable
     /// </summary>
     public TextDocument LoadDocument(string documentName)
     {
-        if (!rootFileLoaded)
+        if (!isRootFileLoaded)
             throw new InvalidOperationException("Projeto não foi carregado. Chame LoadProject() primeiro.");
 
         // Verificar cache
@@ -99,7 +99,7 @@ public class ProjectManager(string projectFilePath) : IDisposable
     /// </summary>
     public TextSection GetTextSection(string documentName, ulong sectionId)
     {
-        if (!rootFileLoaded)
+        if (!isRootFileLoaded)
             throw new InvalidOperationException("Projeto não foi carregado. Chame LoadProject() primeiro.");
 
         // Inicializar cache do documento se necessário
@@ -165,7 +165,7 @@ public class ProjectManager(string projectFilePath) : IDisposable
     /// </summary>
     public void SaveProject()
     {
-        if (!rootFileLoaded)
+        if (!isRootFileLoaded)
             throw new InvalidOperationException("Projeto não foi carregado. Chame LoadProject() primeiro.");
 
         try
@@ -209,7 +209,7 @@ public class ProjectManager(string projectFilePath) : IDisposable
     /// </summary>
     public TextDocument CreateNewDocument(string documentName)
     {
-        if (!rootFileLoaded)
+        if (!isRootFileLoaded)
             throw new InvalidOperationException("Projeto não foi carregado. Chame LoadProject() primeiro.");
 
         if (loadedDocuments.ContainsKey(documentName))
@@ -233,7 +233,7 @@ public class ProjectManager(string projectFilePath) : IDisposable
     /// </summary>
     public ulong AppendTextSection(string documentName, string text)
     {
-        if (!rootFileLoaded)
+        if (!isRootFileLoaded)
             throw new InvalidOperationException("Projeto não foi carregado. Chame LoadProject() primeiro.");
 
         var document = LoadDocument(documentName);
@@ -280,7 +280,7 @@ public class ProjectManager(string projectFilePath) : IDisposable
     /// </summary>
     public void UpdateTextSection(string documentName, ulong sectionId, string newText)
     {
-        if (!rootFileLoaded)
+        if (!isRootFileLoaded)
             throw new InvalidOperationException("Projeto não foi carregado. Chame LoadProject() primeiro.");
 
         var section = GetTextSection(documentName, sectionId);
@@ -297,7 +297,7 @@ public class ProjectManager(string projectFilePath) : IDisposable
     /// </summary>
     public void RemoveTextSection(string documentName, ulong sectionId)
     {
-        if (!rootFileLoaded)
+        if (!isRootFileLoaded)
             throw new InvalidOperationException("Projeto não foi carregado. Chame LoadProject() primeiro.");
 
         var document = LoadDocument(documentName);
@@ -340,7 +340,7 @@ public class ProjectManager(string projectFilePath) : IDisposable
         rootFileZip?.Dispose();
         loadedDocuments.Clear();
         loadedSections.Clear();
-        rootFileLoaded = false;
+        isRootFileLoaded = false;
     }
 
 
