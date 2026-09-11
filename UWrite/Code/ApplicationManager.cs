@@ -10,7 +10,7 @@ namespace UWrite.Code;
 /// </summary>
 public static class ApplicationManager
 {
-    private static Dictionary<string, Project> loadedProjects = new Dictionary<string, Project>();
+    private static readonly Dictionary<string, Project> loadedProjects = [];
     public static IReadOnlyDictionary<string, Project> Projects => loadedProjects;
 
 }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace UWrite.Code;
 
 /// <summary>
-/// Gerencia um projeto específico, contendo um proxy, gerenciador de mudanças, etc. para os documentos e seções do projeto.
+/// Um proxy para gerenciar tudo sobre um projeto específico
 /// </summary>
 /// <param name="projectFilePath">Caminho do arquivo .uwp do projeto</param>
 public class ProjectManager(string projectFilePath) : IDisposable
@@ -332,15 +332,17 @@ public class ProjectManager(string projectFilePath) : IDisposable
         document.RemovalCount++;
     }
 
-    public Task<Project> CreateNewProject(string Name)
+    /// <summary>
+    /// Libera os recursos do ProjectManager.
+    /// </summary>
+    public void Dispose()
     {
-        // TODO: Criar um novo projeto com o nome especificado, inicializando ProjectMetadata e salvando no arquivo .uwp, caso não exista outro arquivo com o mesmo nome.
+        rootFileZip?.Dispose();
+        loadedDocuments.Clear();
+        loadedSections.Clear();
+        rootFileLoaded = false;
     }
 
-    public Task<List<(string, ProjectMetadata)>> ListProjects()
-    {
-        // TODO: Listar todos os projetos já criados, junto com seus metadados
-    }
 
 
     /// <summary>
@@ -508,15 +510,170 @@ public class ProjectManager(string projectFilePath) : IDisposable
         }
     }
 
+
     /// <summary>
-    /// Libera os recursos do ProjectManager.
+    /// Valida se um arquivo de projeto contém metadata válida.
     /// </summary>
-    public void Dispose()
+    public static bool IsValidProject(string projectPath)
     {
-        rootFileZip?.Dispose();
-        loadedDocuments.Clear();
-        loadedSections.Clear();
-        rootFileLoaded = false;
+        try
+        {            
+            if (!File.Exists(projectPath))
+                return false;
+            
+            using (var zipArchive = ZipFile.OpenRead(projectPath))
+            {
+                // Verificar se existe metadata.uwf
+                var metadataEntry = zipArchive.GetEntry(MetadataPath);
+                if (metadataEntry == null)
+                    return false;
+
+                // Tentar ler e descriptografar metadata
+                using (var stream = metadataEntry.Open())
+                using (var ms = new MemoryStream())
+                {
+                    stream.CopyTo(ms);
+                    var encryptedData = ms.ToArray();                    
+                    var decryptedData = EncryptionHelper.Decrypt(encryptedData);                    
+                    var metadata = BinarySerializationHelper.DeserializeProjectMetadata(decryptedData);
+                    
+                    return true;
+                }
+            }
+        }
+        catch
+        {            
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Tenta carregar a metadata de um projeto válido.
+    /// </summary>
+    public static ProjectMetadata? TryLoadProjectMetadata(string projectPath)
+    {
+        try
+        {
+            if (!File.Exists(projectPath))
+                return null;
+
+            using (var zipArchive = ZipFile.OpenRead(projectPath))
+            {
+                var metadataEntry = zipArchive.GetEntry(MetadataPath);
+                if (metadataEntry == null)
+                    return null;
+
+                using (var stream = metadataEntry.Open())
+                using (var ms = new MemoryStream())
+                {
+                    stream.CopyTo(ms);
+                    var encryptedData = ms.ToArray();
+                    var decryptedData = EncryptionHelper.Decrypt(encryptedData);
+                    return BinarySerializationHelper.DeserializeProjectMetadata(decryptedData);
+                }
+            }
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Cria um novo projeto com o nome especificado.
+    /// </summary>
+    /// <param name="projectName">Nome do projeto (sem extensão)</param>
+    /// <returns>Caminho relativo do arquivo criado</returns>
+    public static string CreateNewProject(string projectName)
+    {
+        try
+        {            
+            if (!Directory.Exists(ProjectsFolderPath))
+                Directory.CreateDirectory(ProjectsFolderPath);
+            
+            var projectFileName = $"{projectName}.uwp";
+            var fullProjectPath = Path.Combine(ProjectsFolderPath, projectFileName);
+            
+            if (File.Exists(fullProjectPath))
+                throw new InvalidOperationException($"'{projectName}' já existe.");
+            
+            using (var zipArchive = ZipFile.Open(fullProjectPath, ZipArchiveMode.Create))
+            {                
+                var defaultMetadata = new ProjectMetadata();                
+
+                // Serializar e criptografar metadata
+                var serialized = BinarySerializationHelper.SerializeProjectMetadata(defaultMetadata);
+                var encrypted = EncryptionHelper.Encrypt(serialized);
+
+                // Criar entrada metadata.uwf
+                var metadataEntry = zipArchive.CreateEntry(MetadataPath);
+                using (var stream = metadataEntry.Open())
+                {
+                    stream.Write(encrypted, 0, encrypted.Length);
+                }
+
+                // Criar estrutura de pasta docs/ (adicionar arquivo dummy para garantir pasta)
+                var docsEntry = zipArchive.CreateEntry($"{DocumentsFolderPath}/");
+            }
+
+            return projectFileName;
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Erro ao criar novo projeto: {projectName}", ex);
+        }
+    }
+
+    /// <summary>
+    /// Lista todos os projetos válidos encontrados em ProjectsFolderPath.
+    /// </summary>
+    /// <returns>Dictionary contendo nome do projeto (sem extensão) e sua metadata</returns>
+    public static Dictionary<string, ProjectMetadata> ListProjects()
+    {
+        var projects = new Dictionary<string, ProjectMetadata>();
+
+        try
+        {
+            // Verificar se diretório de projetos existe
+            if (!Directory.Exists(ProjectsFolderPath))
+                return projects; // Retornar vazio se não existe
+
+            // Procurar por arquivos .uwp
+            var projectFiles = Directory.GetFiles(ProjectsFolderPath, "*.uwp", SearchOption.TopDirectoryOnly);
+
+            foreach (var projectPath in projectFiles)
+            {
+                try
+                {
+                    // Validar projeto
+                    if (!IsValidProject(projectPath))
+                        continue; // Ignorar projetos inválidos
+
+                    // Tentar carregar metadata
+                    var metadata = TryLoadProjectMetadata(projectPath);
+                    if (metadata == null)
+                        continue; // Ignorar se não conseguir carregar metadata
+
+                    // Obter nome do projeto (sem extensão)
+                    var fileName = Path.GetFileNameWithoutExtension(projectPath);
+
+                    // Adicionar ao resultado
+                    projects[fileName] = metadata.Value;
+                }
+                catch
+                {
+                    // Ignorar projetos com erro
+                    continue;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            // Logar ou tratar erro de acesso ao diretório
+            throw new InvalidOperationException("Erro ao listar projetos", ex);
+        }
+
+        return projects;
     }
 
 }
