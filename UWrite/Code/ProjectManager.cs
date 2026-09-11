@@ -5,22 +5,27 @@ using System.IO.Compression;
 using System.Text;
 using System.Linq;
 using UWrite.Models;
+using System.Threading.Tasks;
 
 namespace UWrite.Code;
 
 /// <summary>
-/// Gerenciador de documentos que mantém um ZipContainer criptografado com estrutura modular.
+/// Gerencia um projeto específico, contendo um proxy, gerenciador de mudanças, etc. para os documentos e seções do projeto.
 /// </summary>
-/// <remarks>
-/// Inicializa uma nova instância de DocumentManager.
-/// </remarks>
 /// <param name="projectFilePath">Caminho do arquivo .uwp do projeto</param>
-public class DocumentManager(string projectFilePath) : IDisposable
+public class ProjectManager(string projectFilePath) : IDisposable
 {
-    private readonly string rootFilePath = projectFilePath;
-    private ZipArchive rootFileZip;
+    private readonly string rootFilePath = Path.Combine(ProjectsFolderPath, projectFilePath);
+    private ZipArchive rootFileZip;    
+    private bool rootFileLoaded = false; // Se o arquivo zip raiz foi carregado (zipfile e sua metadata.uwf)    
+
+    // Constantes de caminhos
+    private const string MetadataPath = "metadata.uwf";
+    private const string DocumentsFolderPath = "docs";
+    public static string ProjectsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "UWrite", "Projects");
+
+    // Dados do projeto carregado
     private ProjectMetadata projectMetadata;
-    private bool rootFileLoaded = false; // Se o arquivo zip raiz foi carregado (zipfile e sua metadata.uwf)
 
     // Cache de documentos carregados
     private readonly Dictionary<string, TextDocument> loadedDocuments = new();
@@ -28,9 +33,7 @@ public class DocumentManager(string projectFilePath) : IDisposable
     // Cache de seções carregadas (documentName -> (sectionId -> section))
     private readonly Dictionary<string, Dictionary<ulong, TextSection>> loadedSections = new();
 
-    // Constantes de caminhos
-    private const string ProjectMetadataPath = "metadata.uwf";
-    private const string DocumentsFolderPath = "docs";
+    
 
 
     /// <summary>
@@ -329,7 +332,16 @@ public class DocumentManager(string projectFilePath) : IDisposable
         document.RemovalCount++;
     }
 
-    
+    public Task<Project> CreateNewProject(string Name)
+    {
+        // TODO: Criar um novo projeto com o nome especificado, inicializando ProjectMetadata e salvando no arquivo .uwp, caso não exista outro arquivo com o mesmo nome.
+    }
+
+    public Task<List<(string, ProjectMetadata)>> ListProjects()
+    {
+        // TODO: Listar todos os projetos já criados, junto com seus metadados
+    }
+
 
     /// <summary>
     /// Carrega ProjectMetadata internamente 
@@ -338,9 +350,9 @@ public class DocumentManager(string projectFilePath) : IDisposable
     {
         try
         {
-            var entry = rootFileZip.GetEntry(ProjectMetadataPath);
+            var entry = rootFileZip.GetEntry(MetadataPath);
             if (entry == null)
-                throw new FileNotFoundException($"Arquivo de metadados não encontrado: {ProjectMetadataPath}");
+                throw new FileNotFoundException($"Arquivo de metadados não encontrado: {MetadataPath}");
 
             using (var stream = entry.Open())
             using (var ms = new MemoryStream())
@@ -368,11 +380,11 @@ public class DocumentManager(string projectFilePath) : IDisposable
             var encrypted = EncryptionHelper.Encrypt(serialized);
 
             // Remover entrada existente se houver
-            var existingEntry = zipArchive.GetEntry(ProjectMetadataPath);
+            var existingEntry = zipArchive.GetEntry(MetadataPath);
             existingEntry?.Delete();
 
             // Adicionar nova entrada
-            var entry = zipArchive.CreateEntry(ProjectMetadataPath);
+            var entry = zipArchive.CreateEntry(MetadataPath);
             using (var stream = entry.Open())
             {
                 stream.Write(encrypted, 0, encrypted.Length);
@@ -497,7 +509,7 @@ public class DocumentManager(string projectFilePath) : IDisposable
     }
 
     /// <summary>
-    /// Libera os recursos do DocumentManager.
+    /// Libera os recursos do ProjectManager.
     /// </summary>
     public void Dispose()
     {

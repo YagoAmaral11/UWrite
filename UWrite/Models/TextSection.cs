@@ -4,6 +4,9 @@ using System.Text;
 
 namespace UWrite.Models;
 
+/// <summary>
+/// Representa seções de texto que compõem um documento de texto do projeto
+/// </summary>
 public class TextSection
 {
     public ulong? Previous { get; set; }

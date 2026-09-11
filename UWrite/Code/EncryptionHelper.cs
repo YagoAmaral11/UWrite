@@ -10,10 +10,10 @@ namespace UWrite.Code;
 internal static class EncryptionHelper
 {
     // Chave de criptografia padrão (256 bits para AES)
-    private static readonly byte[] DefaultKey = Encoding.UTF8.GetBytes("UWrite_Default_Key_2024_32Bytes!!");
+    private static readonly byte[] DefaultKey = Encoding.UTF8.GetBytes("UWrite_DK-fWmR)2MKLlTCNPpmslWWps");
 
     // IV padrão (128 bits para AES)
-    private static readonly byte[] DefaultIV = Encoding.UTF8.GetBytes("UWrite_IV_16Byt!");
+    private static readonly byte[] DefaultIV = Encoding.UTF8.GetBytes("UWrite_IV&,JwQ5F");
 
     static EncryptionHelper()
     {

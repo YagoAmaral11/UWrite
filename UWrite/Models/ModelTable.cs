@@ -4,10 +4,10 @@ using System.Text;
 
 namespace UWrite.Models;
 
-/*
- *      Tabela contendo os modelos de página criados pelo usuário
- */
 
+/// <summary>
+/// Tabela contendo os ProjectModels do projeto
+/// </summary>
 public class ModelTable
 {
 }

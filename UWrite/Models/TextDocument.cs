@@ -4,6 +4,9 @@ using System.Text;
 
 namespace UWrite.Models;
 
+/// <summary>
+/// Representa um documento de texto do projeto
+/// </summary>
 public class TextDocument
 {
     public string Name { get; set; }
