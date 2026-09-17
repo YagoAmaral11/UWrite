@@ -11,72 +11,38 @@ namespace UWrite.Views.Controls.MainMenu;
 
 public partial class RecentProjectItemView : UserControl
 {
-    private ProjectMetadata? bindedMetadata;
-    private string? projectPath;
-    private DateTimeOffset? lastModified;
+    private DiscoveredProject Project
+    {
+        get
+        {
+            if (DataContext != null && DataContext is DiscoveredProject project)
+                return project;
+            else
+                return DefaultPlaceholderProject;
+        }
+    }
     private static readonly IImage DefaultProjectImage = new Bitmap(AssetLoader.Open(new("avares://UWrite/Assets/FlaticonIcons/folder.png")));
+    private static readonly DiscoveredProject DefaultPlaceholderProject = new(new(), "UWrite/Projects/Project.uwp", DateTimeOffset.UnixEpoch);    
 
 
+    public string ProjectName => Project.Metadata.ProjectName;
+    public string ProjectPath => Project.Path;
+    public string ProjectLastModified => GetDateString(Project.LastEdit);
     public IImage ProjectImage
     {
         get => DefaultProjectImage;
     }
 
-    public string ProjectName
-    {
-        get
-        {
-            if (bindedMetadata.HasValue)
-            {
-                return bindedMetadata.Value.ProjectName;
-            }
-            else
-            {
-                return "Lorem Ipsum";
-            }
-        }
-    }
-
-    public string ProjectPath
-    {
-        get
-        {
-            if (projectPath == null)
-            {
-                return "UWrite/Projects/LoremIpsum.uwp";
-            }
-            else
-            {
-                return projectPath;
-            }
-        }
-    }
-
-    public string ProjectLastModified
-    {
-        get
-        {
-            if (lastModified.HasValue)
-            {                
-                return GetDateString(lastModified.Value);
-            }
-            else
-            {                
-                return GetDateString(DateTimeOffset.UnixEpoch);
-            }
-        }
-    }
-
-
 
     public RecentProjectItemView()
     {        
-        InitializeComponent();
+        InitializeComponent();        
     }
+
 
     private string GetDateString(DateTimeOffset dateTime)
     {
-        var localTime = dateTime.ToLocalTime();
+        var localTime = dateTime;
         return $"{localTime.ToString("g", CultureInfo.CurrentCulture)}";
     } 
 }

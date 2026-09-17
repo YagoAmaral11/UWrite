@@ -52,9 +52,11 @@
 			</StackPanel>
 
 			<!-- Lista de Projetos -->
-			<StackPanel>
-				
-			</StackPanel>
+			<ListBox ItemsSource="" Margin="10,0,0,0" Grid.Column="1" x:Name="ProjectList" Background="Transparent">
+				<ListBox.ItemTemplate>
+					
+				</ListBox.ItemTemplate>
+			</ListBox>			
 			
 		</Grid>
 		

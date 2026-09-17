@@ -2,7 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="UWrite.Views.Controls.MainMenu.RecentProjectItemView"
 			 xmlns:local="using:UWrite.Views.Controls.MainMenu"
-			 x:DataType="local:RecentProjectItemView"
+			 xmlns:models="using:UWrite.Models"
+			 x:DataType="models:DiscoveredProject"
+			 x:Name="Root"
              Height="80"
              Padding="12">
 
@@ -29,7 +31,7 @@
                        Grid.Column="0"
 					   Height="32"
 					   Width="32"
-                       Source="{Binding ProjectImage}"
+                       Source="{Binding #Root.ProjectImage}"
                        VerticalAlignment="Center"
                        HorizontalAlignment="Center" />
 
@@ -41,7 +43,7 @@
                        FontWeight="SemiBold"
                        Foreground="{StaticResource ForegroundBrush}"
                        VerticalAlignment="Center" 
-					   Text="{Binding ProjectName}" />
+					   Text="{Binding #Root.ProjectName}" />
 
 			<!-- Caminho do Projeto -->
 			<TextBlock Grid.Row="1"
@@ -52,7 +54,7 @@
                        Foreground="{StaticResource SubTextColorLighter}"
                        VerticalAlignment="Center"
                        TextTrimming="CharacterEllipsis"
-					   Text="{Binding ProjectPath}"/>
+					   Text="{Binding #Root.ProjectPath}"/>
 
 			<!-- Data/Hora de Modificação -->
 			<TextBlock Grid.Row="0"
@@ -63,7 +65,7 @@
                        Foreground="{StaticResource SubTextBrushLighter}"
                        VerticalAlignment="Bottom"
                        HorizontalAlignment="Right" 
-					   Text="{Binding ProjectLastModified}"/>
+					   Text="{Binding #Root.ProjectLastModified}"/>
 		</Grid>
 
 		<Button.Styles>
