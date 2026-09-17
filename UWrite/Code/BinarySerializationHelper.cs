@@ -18,6 +18,7 @@ internal static class BinarySerializationHelper
         using (var ms = new MemoryStream())
         using (var writer = new BinaryWriter(ms))
         {
+            writer.Write(metadata.ProjectName);
             writer.Write(metadata.ApplicationVersion);
             return ms.ToArray();
         }
@@ -33,6 +34,7 @@ internal static class BinarySerializationHelper
         {
             return new ProjectMetadata
             {
+                ProjectName = reader.ReadString(),
                 ApplicationVersion = reader.ReadInt32()
             };
         }
@@ -110,9 +112,9 @@ internal static class BinarySerializationHelper
 
 
     /// <summary>
-    /// Serializa um TextSection para um array de bytes.
+    /// Serializa um TextSegment para um array de bytes.
     /// </summary>
-    public static byte[] SerializeTextSection(TextSection section)
+    public static byte[] SerializeTextSection(TextSegment section)
     {
         using (var ms = new MemoryStream())
         using (var writer = new BinaryWriter(ms))
@@ -145,14 +147,14 @@ internal static class BinarySerializationHelper
     }
 
     /// <summary>
-    /// Desserializa um TextSection de um array de bytes.
+    /// Desserializa um TextSegment de um array de bytes.
     /// </summary>
-    public static TextSection DeserializeTextSection(byte[] data)
+    public static TextSegment DeserializeTextSection(byte[] data)
     {
         using (var ms = new MemoryStream(data))
         using (var reader = new BinaryReader(ms))
         {
-            var section = new TextSection();
+            var section = new TextSegment();
 
             // Ler Previous
             if (reader.ReadBoolean())

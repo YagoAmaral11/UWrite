@@ -4,10 +4,59 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:vm="using:UWrite.ViewModels"
 		xmlns:views="using:UWrite.Views"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+		xmlns:controls="using:UWrite.Views.Controls"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+		Width="800" Height="600" CanResize="False"				
+		TransparencyLevelHint="Transparent" ExtendClientAreaToDecorationsHint="True"		
 		WindowStartupLocation="CenterScreen"
-        x:Class="UWrite.MainMenuWindow"
+        x:Class="UWrite.Views.MainMenuWindow"		
 		Icon="/Assets/avalonia-logo.ico"
-        Title="UWrite">
-	    <views:MainMenuView/>
+        Title="UWrite"
+		Background="{StaticResource BackgroundBrush}">
+
+	<Window.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceInclude Source="avares://UWrite/Resources/Colors.axaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Window.Resources>
+
+	<StackPanel Orientation="Vertical" Margin="20">
+		<!-- Título Principal -->
+		<TextBlock Grid.Row="0"
+                   Text="UWrite"
+                   FontSize="60"
+                   FontWeight="Bold"
+                   Foreground="{StaticResource ForegroundBrush}"
+                   Margin="0,0,0,40"
+                   VerticalAlignment="Top"
+                   HorizontalAlignment="Left" />
+
+		<Grid ColumnDefinitions="3*, 7*">
+			
+			<!-- Menu de Ações -->
+			<StackPanel Grid.Column="0"
+                        Orientation="Vertical"                        
+                        VerticalAlignment="Top">
+				<controls:MenuButtonView Text="New Project" 
+										 Icon="avares://UWrite/Assets/FlaticonIcons/folder-plus-circle.png"
+										 Click=""></controls:MenuButtonView>
+				<controls:MenuButtonView Text="Load Project" 
+										 Icon="avares://UWrite/Assets/FlaticonIcons/folder-upload.png"
+										 Click=""></controls:MenuButtonView>
+				<controls:MenuButtonView Text="Quit"
+										 Icon="avares://UWrite/Assets/FlaticonIcons/circle-xmark.png"
+										 Click=""
+										 ></controls:MenuButtonView>
+			</StackPanel>
+
+			<!-- Lista de Projetos -->
+			<StackPanel>
+				
+			</StackPanel>
+			
+		</Grid>
+		
+	</StackPanel>	
 </Window>

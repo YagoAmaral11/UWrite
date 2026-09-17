@@ -1,6 +1,8 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="UWrite.Views.Controls.MainMenu.RecentProjectItemView"
+			 xmlns:local="using:UWrite.Views.Controls.MainMenu"
+			 x:DataType="local:RecentProjectItemView"
              Height="80"
              Padding="12">
 
@@ -20,14 +22,14 @@
 			</ResourceDictionary>
 		</Button.Resources>
 
-		<Grid ColumnDefinitions="48,*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="12">
+		<Grid ColumnDefinitions="48,9*,1*" RowDefinitions="Auto, Auto" ColumnSpacing="12">
 			<!-- Ícone -->
-			<TextBlock Grid.Row="0"
+			<Image     Grid.Row="0"
                        Grid.RowSpan="2"
                        Grid.Column="0"
-                       x:Name="IconTextBlock"
-                       FontSize="32"
-                       Foreground="{StaticResource AccentBrush}"
+					   Height="32"
+					   Width="32"
+                       Source="{Binding ProjectImage}"
                        VerticalAlignment="Center"
                        HorizontalAlignment="Center" />
 
@@ -35,29 +37,33 @@
 			<TextBlock Grid.Row="0"
                        Grid.Column="1"
                        x:Name="ProjectNameTextBlock"
-                       FontSize="15"
+                       FontSize="16"
                        FontWeight="SemiBold"
                        Foreground="{StaticResource ForegroundBrush}"
-                       VerticalAlignment="Center" />
+                       VerticalAlignment="Center" 
+					   Text="{Binding ProjectName}" />
 
 			<!-- Caminho do Projeto -->
 			<TextBlock Grid.Row="1"
                        Grid.Column="1"
                        x:Name="ProjectPathTextBlock"
-                       FontSize="12"
+                       FontSize="10"					   
+					   FontStyle="Italic"
                        Foreground="{StaticResource SubTextColorLighter}"
                        VerticalAlignment="Center"
-                       TextTrimming="CharacterEllipsis" />
+                       TextTrimming="CharacterEllipsis"
+					   Text="{Binding ProjectPath}"/>
 
 			<!-- Data/Hora de Modificação -->
 			<TextBlock Grid.Row="0"
                        Grid.RowSpan="2"
                        Grid.Column="2"
                        x:Name="ModificationDateTextBlock"
-                       FontSize="12"
+                       FontSize="8"
                        Foreground="{StaticResource SubTextBrushLighter}"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Right" />
+                       VerticalAlignment="Bottom"
+                       HorizontalAlignment="Right" 
+					   Text="{Binding ProjectLastModified}"/>
 		</Grid>
 
 		<Button.Styles>

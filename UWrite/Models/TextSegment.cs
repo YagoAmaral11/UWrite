@@ -7,7 +7,7 @@ namespace UWrite.Models;
 /// <summary>
 /// Representa seções de texto que compõem um documento de texto do projeto
 /// </summary>
-public class TextSection
+public class TextSegment
 {
     public ulong? Previous { get; set; }
     public ulong? Next {  get; set; }

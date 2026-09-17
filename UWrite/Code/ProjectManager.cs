@@ -31,7 +31,7 @@ public class ProjectManager(string projectFilePath) : IDisposable
     private readonly Dictionary<string, TextDocument> loadedDocuments = new();
 
     // Cache de seções carregadas (documentName -> (sectionId -> section))
-    private readonly Dictionary<string, Dictionary<ulong, TextSection>> loadedSections = new();
+    private readonly Dictionary<string, Dictionary<ulong, TextSegment>> loadedSections = new();
 
     
 
@@ -95,16 +95,16 @@ public class ProjectManager(string projectFilePath) : IDisposable
     }
 
     /// <summary>
-    /// Obtém uma TextSection específica pelo ID dentro de um documento.
+    /// Obtém uma TextSegment específica pelo ID dentro de um documento.
     /// </summary>
-    public TextSection GetTextSection(string documentName, ulong sectionId)
+    public TextSegment GetTextSection(string documentName, ulong sectionId)
     {
         if (!isRootFileLoaded)
             throw new InvalidOperationException("Projeto não foi carregado. Chame LoadProject() primeiro.");
 
         // Inicializar cache do documento se necessário
         if (!loadedSections.ContainsKey(documentName))
-            loadedSections[documentName] = new Dictionary<ulong, TextSection>();
+            loadedSections[documentName] = new Dictionary<ulong, TextSegment>();
 
         var docCache = loadedSections[documentName];
 
@@ -128,7 +128,7 @@ public class ProjectManager(string projectFilePath) : IDisposable
     /// <summary>
     /// Carrega múltiplas TextSections de um documento.
     /// </summary>
-    public List<TextSection> GetTextSections(string documentName, params ulong[] sectionIds)
+    public List<TextSegment> GetTextSections(string documentName, params ulong[] sectionIds)
     {
         return sectionIds.Select(id => GetTextSection(documentName, id)).ToList();
     }
@@ -136,10 +136,10 @@ public class ProjectManager(string projectFilePath) : IDisposable
     /// <summary>
     /// Carrega todas as seções de um documento em ordem.
     /// </summary>
-    public List<TextSection> LoadAllSectionsInDocument(string documentName)
+    public List<TextSegment> LoadAllSectionsInDocument(string documentName)
     {
         var document = LoadDocument(documentName);
-        var sections = new List<TextSection>();
+        var sections = new List<TextSegment>();
 
         if (!document.FirstTextContainer.HasValue)
             return sections;
@@ -229,7 +229,7 @@ public class ProjectManager(string projectFilePath) : IDisposable
     }
 
     /// <summary>
-    /// Cria uma nova TextSection e adiciona ela no final do documento
+    /// Cria uma nova TextSegment e adiciona ela no final do documento
     /// </summary>
     public ulong AppendTextSection(string documentName, string text)
     {
@@ -242,7 +242,7 @@ public class ProjectManager(string projectFilePath) : IDisposable
         var newId = document.NextID;
         document.NextID++;
 
-        var newSection = new TextSection
+        var newSection = new TextSegment
         {
             Text = text,
             Previous = document.LastTextContainer,
@@ -268,7 +268,7 @@ public class ProjectManager(string projectFilePath) : IDisposable
 
         // Adicionar seção ao cache
         if (!loadedSections.ContainsKey(documentName))
-            loadedSections[documentName] = new Dictionary<ulong, TextSection>();
+            loadedSections[documentName] = new Dictionary<ulong, TextSegment>();
 
         loadedSections[documentName][newId] = newSection;
 
@@ -276,7 +276,7 @@ public class ProjectManager(string projectFilePath) : IDisposable
     }
 
     /// <summary>
-    /// Modifica o texto de uma TextSection existente.
+    /// Modifica o texto de uma TextSegment existente.
     /// </summary>
     public void UpdateTextSection(string documentName, ulong sectionId, string newText)
     {
@@ -287,13 +287,13 @@ public class ProjectManager(string projectFilePath) : IDisposable
         section.Text = newText;
 
         if (!loadedSections.ContainsKey(documentName))
-            loadedSections[documentName] = new Dictionary<ulong, TextSection>();
+            loadedSections[documentName] = new Dictionary<ulong, TextSegment>();
 
         loadedSections[documentName][sectionId] = section;
     }
 
     /// <summary>
-    /// Remove uma TextSection do documento, atualizando o encadeamento.
+    /// Remove uma TextSegment do documento, atualizando o encadeamento.
     /// </summary>
     public void RemoveTextSection(string documentName, ulong sectionId)
     {
@@ -454,9 +454,9 @@ public class ProjectManager(string projectFilePath) : IDisposable
     }
 
     /// <summary>
-    /// Carrega uma TextSection internamente
+    /// Carrega uma TextSegment internamente
     /// </summary>
-    private TextSection LoadTextSectionInternal(string documentName, ulong sectionId)
+    private TextSegment LoadTextSectionInternal(string documentName, ulong sectionId)
     {
         try
         {
@@ -482,9 +482,9 @@ public class ProjectManager(string projectFilePath) : IDisposable
     }
 
     /// <summary>
-    /// Salva uma TextSection internamente 
+    /// Salva uma TextSegment internamente 
     /// </summary>
-    private void SaveTextSectionInternal(ZipArchive zipArchive, string documentName, ulong sectionId, TextSection section)
+    private void SaveTextSectionInternal(ZipArchive zipArchive, string documentName, ulong sectionId, TextSegment section)
     {
         try
         {

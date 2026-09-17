@@ -1,45 +1,46 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:local="using:UWrite.Views.Controls"
+			 xmlns:converters="using:Avalonia.Data.Converters"
              x:Class="UWrite.Views.Controls.MenuButtonView"
              Width="200"
-             Height="50">
+             Height="50"
+			 x:Name="Root"
+			 x:DataType="local:MenuButtonView">
 
-	<Button Background="Transparent"
+	<Button	Click="OnButtonClick"	
+			Background="Transparent"
             BorderThickness="0"
             Padding="16,8"
             HorizontalContentAlignment="Left">
-		
+
 		<Button.Resources>
 			<ResourceDictionary>
 				<ResourceDictionary.MergedDictionaries>
 					<ResourceInclude Source="avares://UWrite/Resources/Colors.axaml" />
 				</ResourceDictionary.MergedDictionaries>
 			</ResourceDictionary>
-		</Button.Resources>
+		</Button.Resources>	
 
 		<StackPanel Orientation="Horizontal"
-                    Spacing="12"
+                    Spacing="8"
                     VerticalAlignment="Center">
+			
 			<!-- Ícone -->
-			<TextBlock x:Name="IconTextBlock"
-                       FontSize="24"
-                       Foreground="{StaticResource ForegroundBrush}"
-                       VerticalAlignment="Center" />
+			<Image Source="{Binding Icon, FallbackValue=avares://UWrite/Assets/Icons/list-flaticon.png, TargetNullValue=avares://UWrite/Assets/Icons/list-flaticon.png, ElementName=Root}"
+                   Width="24"
+                   Height="24"				   
+                   VerticalAlignment="Center"				   
+				   RenderOptions.BitmapInterpolationMode="HighQuality"
+				   IsVisible="{Binding Icon, ElementName=Root, Converter={x:Static converters:ObjectConverters.IsNotNull}}"/>
 
 			<!-- Texto do botão -->
-			<TextBlock x:Name="ButtonTextBlock"
+			<TextBlock Text="{Binding Text, ElementName=Root}"
                        FontSize="16"
                        Foreground="{StaticResource ForegroundBrush}"
                        VerticalAlignment="Center"
                        TextWrapping="Wrap" />
 		</StackPanel>
-
-		<Button.Styles>
-			<Style Selector="Button:pointerover">
-				<Setter Property="Background" Value="{StaticResource BackgroundSecondaryBrush}" />
-			</Style>
-		</Button.Styles>
 		
 	</Button>
 </UserControl>

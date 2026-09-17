@@ -27,14 +27,14 @@ public partial class App : Application
         }
         else if (ApplicationLifetime is IActivityApplicationLifetime singleViewFactoryApplicationLifetime)
         {
-            singleViewFactoryApplicationLifetime.MainViewFactory = () => new MainMenuView 
+            singleViewFactoryApplicationLifetime.MainViewFactory = () => new MainMenuWindow 
             { 
                 DataContext = new MainMenuViewModel() 
             };
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
-            singleViewPlatform.MainView = new MainMenuView()
+            singleViewPlatform.MainView = new MainMenuWindow()
             {
                 DataContext = new MainMenuViewModel()
             };

@@ -9,5 +9,6 @@ namespace UWrite.Models;
 /// </summary>
 public struct ProjectMetadata
 {
-    public int ApplicationVersion { get; set; }
+    public string ProjectName { get; set; }
+    public int ApplicationVersion { get; set; }                                                             
 }
