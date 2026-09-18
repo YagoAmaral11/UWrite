@@ -5,11 +5,13 @@
 		xmlns:vm="using:UWrite.ViewModels"
 		xmlns:views="using:UWrite.Views"
 		xmlns:controls="using:UWrite.Views.Controls"
+		xmlns:controlsMM="using:UWrite.Views.Controls.MainMenu"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
 		Width="800" Height="600" CanResize="False"				
 		TransparencyLevelHint="Transparent" ExtendClientAreaToDecorationsHint="True"		
 		WindowStartupLocation="CenterScreen"
         x:Class="UWrite.Views.MainMenuWindow"		
+		x:DataType="vm:MainMenuViewModel"
 		Icon="/Assets/avalonia-logo.ico"
         Title="UWrite"
 		Background="{StaticResource BackgroundBrush}">
@@ -52,11 +54,26 @@
 			</StackPanel>
 
 			<!-- Lista de Projetos -->
-			<ListBox ItemsSource="" Margin="10,0,0,0" Grid.Column="1" x:Name="ProjectList" Background="Transparent">
-				<ListBox.ItemTemplate>
-					
-				</ListBox.ItemTemplate>
-			</ListBox>			
+			<StackPanel Grid.Column="1" Margin="10,0,0,0">
+				<TextBlock Text="Projetos" 
+							FontSize="26"
+							Foreground="{StaticResource ForegroundBrush}"/>
+				<TextBlock Text="Nenhum projeto encontrado" 
+							IsVisible="{Binding !HaveProjects}"
+							FontStyle="Italic"
+							FontSize="18"
+							Foreground="{StaticResource SubTextBrush}"/>
+				<ListBox x:Name="ProjectList" ItemsSource="" Background="Transparent"
+					 SelectionMode="Single">
+
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<controlsMM:RecentProjectItemView/>
+						</DataTemplate>
+					</ListBox.ItemTemplate>					
+				</ListBox>
+			</StackPanel>
+			
 			
 		</Grid>
 		

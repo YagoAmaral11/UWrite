@@ -628,9 +628,9 @@ public class ProjectManager(string projectFilePath) : IDisposable
     /// Lista todos os projetos válidos encontrados em ProjectsFolderPath.
     /// </summary>
     /// <returns>Dictionary contendo nome do projeto (sem extensão) e sua metadata</returns>
-    public static Dictionary<string, ProjectMetadata> ListProjects()
+    public static Dictionary<string, (StorageInfo storageInfo, ProjectMetadata metadata)> ListProjects()
     {
-        var projects = new Dictionary<string, ProjectMetadata>();
+        var projects = new Dictionary<string, (StorageInfo, ProjectMetadata)>();
 
         try
         {
@@ -658,7 +658,18 @@ public class ProjectManager(string projectFilePath) : IDisposable
                     var fileName = Path.GetFileNameWithoutExtension(projectPath);
 
                     // Adicionar ao resultado
-                    projects[fileName] = metadata.Value;
+                    var lastAcessTime = new DateTimeOffset(Directory.GetLastWriteTime(projectPath));
+                    var path = projectPath;
+                    var name = metadata.Value.ProjectName;
+
+                    var storageInfo = new StorageInfo()
+                    {
+                        LastModifiedIn = lastAcessTime,
+                        Path = path,
+                        ProjectName = name
+                    };
+                    
+                    projects[fileName] = (storageInfo, metadata.Value);
                 }
                 catch
                 {
@@ -674,6 +685,15 @@ public class ProjectManager(string projectFilePath) : IDisposable
         }
 
         return projects;
+    }
+
+
+
+    public struct StorageInfo
+    {
+        public string Path { get; set; }
+        public string ProjectName { get; set; }
+        public DateTimeOffset LastModifiedIn { get; set; }
     }
 
 }
